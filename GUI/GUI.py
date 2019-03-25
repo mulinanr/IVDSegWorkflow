@@ -46,25 +46,26 @@ hhu_logo = Picture(logo_box, image='hhu_logo.jpg', width=215, height=124, align=
 
 
 #Choose CEST and WASSR MRIs folders from the filesystem. Gives back their path as a String
-chooseFF_box = Box(app, align='left', layout='grid')
-FF_path = Text(chooseFF_box, grid=[1,0])
-FFC_path = Text(chooseFF_box, grid=[1,1])
-chooseFF_button = PushButton(chooseFF_box, text='Suche FF', command=open_browse_FF, grid=[0,0])
-chooseFFC_button = PushButton(chooseFF_box, text='Suchen FFC', command=open_browse_FFC, grid=[0,1])
+main_page_box = Box(app, align='left', layout='grid')
+FF_path = Text(main_page_box, grid=[1, 0])
+FFC_path = Text(main_page_box, grid=[1, 1])
+chooseFF_button = PushButton(main_page_box, text='Suche FF', command=open_browse_FF, grid=[0, 0])
+chooseFFC_button = PushButton(main_page_box, text='Suchen FFC', command=open_browse_FFC, grid=[0, 1])
 
 
 #Define CEST parameters
 cest_box = Box(app, align='left', layout='grid')
-cest_settings_button = PushButton(cest_box, text='WASSR Settings', command=open_cest_settings, grid=[0,0])
+cest_settings_button = PushButton(main_page_box, text='CEST Settings', command=open_cest_settings, grid=[0, 2])
 cest_settings_window = Window(app, title='CEST Settings')
-close_cest_button = PushButton(cest_settings_window, text='Speichern', command=close_cest_settings, grid=[0,0])
+close_cest_button = PushButton(cest_settings_window, text='Speichern', command=close_cest_settings)
 cest_settings_window.hide()
 
 #Define WASSR parameters
 wassr_box = Box(app, align='left', layout='grid')
-open_wassr_button = PushButton(wassr_box, text='Speichern', command=open_wassr_settings, grid=[0,0])
+open_wassr_button = PushButton(main_page_box, text='WASSR Settings', command=open_wassr_settings, grid=[0, 3])
+open_wassr_button.text_color = 'red'
 wassr_settings_window = Window(app, title='WASSR Settings')
-close_wassr_button = PushButton(wassr_settings_window, text='Speichern', command=close_wassr_settings, grid=[0,0])
+close_wassr_button = PushButton(wassr_settings_window, text='Speichern', command=close_wassr_settings)
 wassr_settings_window.hide()
 
 
