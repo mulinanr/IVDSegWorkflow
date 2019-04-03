@@ -4,18 +4,18 @@ from data import *
 
 def train():
     print ('train')
-    generator = trainGenerator( 20,
-                                '../data/train/',
-                                'image',
-                                'label',
-                                'augm')
+    generator = trainGenerator( 23,
+                                '../../cnn_data',
+                                'train',
+                                'mask',
+                                '../../cnn_data/augm')
     
     model = unet()
     model_checkpoint = ModelCheckpoint('unet_images.hdf5', monitor='loss', verbose=1, save_best_only=True)
-    model.fit_generator(generator, steps_per_epoch=30, epochs=10, callbacks=[model_checkpoint])
+    model.fit_generator(generator, steps_per_epoch=300, epochs=10, callbacks=[model_checkpoint])
 
 
-def predict(file):
+def predict():
     model = unet('unet_images.hdf5')
     
 
@@ -26,8 +26,8 @@ def main():
     print ('start')
     if len(sys.argv) == 2 and sys.argv[1] == 'train':
         train()
-    elif len(sys.argv) == 3 and sys.argv[1] == 'predict':
-        predict(sys.argv[2])
+    elif len(sys.argv) == 2 and sys.argv[1] == 'predict':
+        predict()
     else:
         print('incorrect arguments')
 
