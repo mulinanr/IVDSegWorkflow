@@ -7,8 +7,8 @@ import skimage.transform as trans
 
 def adjustData(img,mask):
     if(np.max(img) > 1):
-        img = img / 255
-        mask = mask /255
+        img = img / 255.0
+        mask = mask /255.0
         mask[mask > 0.5] = 1
         mask[mask <= 0.5] = 0
     return (img,mask)

@@ -12,7 +12,7 @@ def train():
     
     model = unet()
     model_checkpoint = ModelCheckpoint('unet_images.hdf5', monitor='loss', verbose=1, save_best_only=True)
-    model.fit_generator(generator, steps_per_epoch=300, epochs=10, callbacks=[model_checkpoint])
+    model.fit_generator(generator, steps_per_epoch=15, epochs=15, shuffle=True, callbacks=[model_checkpoint])
 
 
 def predict():
