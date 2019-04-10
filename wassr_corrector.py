@@ -20,10 +20,17 @@ def matlab_style_gauss2D(shape, sigma=1.0):
 
     return h
 
+def createCellsArray(rows, columns):
+    arrayOfCell = np.empty((rows, columns), dtype=object)
+    for i in range(len(arrayOfCell)):
+        for j in range(len(arrayOfCell[i])):
+            arrayOfCell[i][j] = []
+    return arrayOfCell
+
 
 class WassrCorrector(object):
 
-    def __init__(self, sSlide, hStep, maxOffset, alternating, nDynamics, lmo, gauss, zFilter):
+    def __init__(self, sSlide, hStep, maxOffset, alternating, nDynamics, lmo, gauss, zFilter, algoritm):
         self.sSlide = sSlide
         self.hStep = hStep
         self.maxOffset = maxOffset
@@ -32,25 +39,41 @@ class WassrCorrector(object):
         self.lmo = lmo
         self.gauss = gauss
         self.zFilter = zFilter
+        self.algoritm = algoritm
 
 
     def calculateWassrAmlCorrection(self, imageDirectory, Mask = None):
-        sName = self.defineSName(imageDirectory)
-        (rows, columns) = self.getImageSize(imageDirectory)
+        (sName, filemame) = self.defineSName(imageDirectory)
+
+        if Mask.applyZFilter() == None:
+            Mask = self.createDefaultMask(filemame + '1', 0.0)
 
         if self.alternating:
-            Images = loadAndAlternateImages(imageDirectory, self.nDynamics, self.sSlide)
+            Images = self.loadAndAlternateImages(imageDirectory, filemame, Mask)
         else:
-            Images = loadImages(imageDirectory, self.nDynamics, self.sSlide)
+            Images = self.loadImages(imageDirectory, filemame, Mask)
+
+        Images = self.normalizeImages(Images, Mask)
+
+        if self.zFilter:
+            Images = self.applyZFilter(Images)
+        
+        
+    def selectAlgorithm():
+        if self.lmo == 'B':
+            return 
+
 
 
     def defineSName(self, imageDirectory):
         pathArray = os.path.normpath(imageDirectory).lstrip(os.path.sep).split(os.path.sep)
+        filename = pathArray[-1]
         pathArray[-1] = 'A_' + pathArray[-1]
         sName = os.path.join(*pathArray)
         if not os.path.exists(sName):
             os.makedirs(sName)
-        return sName
+        filename = filename + '_sl_' + str(self.sSlide) + '_dyn_'
+        return (sName, filename)
 
     def getImageSize(self, imageDirectory):
         filename = os.path.basename(os.path.dirname(imageDirectory)) + '_sl_' + str(self.sSlide) + '_dyn_1'
@@ -137,5 +160,28 @@ class WassrCorrector(object):
 
         return Images
 
-    def calculateOffsets(self, maxOffset, Images):
-        return (None, None, None)
+    def calculateOffsets(self, Images):
+        (rows, columns, pages) = Images.shape
+
+        Offset = np.zeros((rows, columns), dtype = float)
+        RootMeasure = np.zeros((rows, columns), dtype = float)
+        mppmIntensW = createCellsArray(rows, columns) 
+        lowstepIntensW = createCellsArray(rows, columns)
+
+        stepOhneShift = (self.maxOffset * 2) / (self.nDynamics - 2)
+        Mppmwerte = np.arange(-self.maxOffset, self.maxOffset, stepOhneShift)
+        Mppmwerte = np.append(Mppmwerte, self.maxOffset), 4
+
+        for i in range(rows):
+            for j in range(columns):
+                Mintenswerte = Images[i,j,:].squeeze().transpose()
+                (Offset[i, j], RootMeasure[i, j], xData, yData) = self.algoritm.calculate(Mppmwerte, Mintenswerte)
+                mppmIntensW[i, j] = [Mppmwerte, Mintenswerte]
+                lowstepIntensW[i, j] = [xData, yData]
+                pass
+
+        return (Offset, RootMeasure, mppmIntensW, lowstepIntensW)
+
+
+
+
