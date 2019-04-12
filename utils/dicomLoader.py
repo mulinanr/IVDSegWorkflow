@@ -29,7 +29,8 @@ def rename_dicom_file(ds, oldFilename):
     newFilename = os.path.join(PathResult, 
                                extract_series(ds),
                                extract_series(ds) + '_sl_' + 
-                               str(ds.InstanceNumber) + '_dyn_' + 
+                               #str(ds.InstanceNumber) + '_dyn_' + 
+                               '1' + '_dyn_' + 
                                str(AcquisitionNumber))
     shutil.copyfile(oldFilename, newFilename)
 
@@ -84,6 +85,8 @@ def load_dicom_files():
     prepare_destinations(seriesSet, PathResult)
     sort_dicom_files(dirList)
     print('Done')
+
+    print(pydicom.dcmread('gagCEST_12_85893_sl_27_dyn_27').items)
 
 
 if __name__ == "__main__":

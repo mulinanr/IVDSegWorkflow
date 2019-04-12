@@ -16,6 +16,7 @@ for dirName, subdirList, fileList in os.walk(PathDicom):
 
 # Get ref file
 RefDs = pydicom.read_file(lstFilesDCM[0], force=True)
+print(RefDs.items)
 
 # Load dimensions based on the number of rows, columns, and slices (along the Z axis)
 ConstPixelDims = (int(RefDs.Rows), int(RefDs.Columns), len(lstFilesDCM))
@@ -36,6 +37,6 @@ for filenameDCM in lstFilesDCM:
         print(name)
 
         # store the raw image data to files
-        pyplot.imsave(name + '_bw.png', ds.pixel_array, cmap=pyplot.cm.bone)
-        pyplot.imsave(name + '.png', ds.pixel_array)
+        #pyplot.imsave(name + '_bw.png', ds.pixel_array, cmap=pyplot.cm.bone)
+        #pyplot.imsave(name + '.png', ds.pixel_array)
 

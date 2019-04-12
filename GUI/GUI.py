@@ -27,8 +27,8 @@ app = App(title='CEST Auswertung', width=550, height=700, bg='white')
 
 
 logo_box = Box(app, width='fill')
-hhu_logo = Picture(logo_box, image='hhu_logo.jpg', width=215, height=124, align='right')
-ukd_logo = Picture(logo_box, image='ukd_logo.jpg', width=323, height=73, align='left')
+hhu_logo = Picture(logo_box, image='gui/hhu_logo.jpg', width=215, height=124, align='right')
+ukd_logo = Picture(logo_box, image='gui/ukd_logo.jpg', width=323, height=73, align='left')
 
 
 #Choose CEST and WASSR MRIs folders from the filesystem. Gives back their path as a String

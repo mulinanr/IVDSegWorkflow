@@ -1,42 +1,16 @@
+import decimal
+import numpy as np
 import pydicom
 import unittest
-import decimal
-import scipy
 
-import numpy as np
-from scipy import interpolate
 from scipy import signal
-import scipy.ndimage
+from scipy import ndimage
+
+from utils import matlab_style_functions
 
 
 filename = '../DICOM_TEST/WASSR_99677/WASSR_99677_sl_1_dyn_1'
 
-def createCellsArray(rows, columns):
-    arrayOfCell = np.empty((rows, columns), dtype=object)
-    for i in range(len(arrayOfCell)):
-        for j in range(len(arrayOfCell[i])):
-            arrayOfCell[i][j] = []
-    return arrayOfCell
-
-def matlab_style_gauss2D(shape=(3,3), sigma=1.0):
-    """
-    2D gaussian mask - should give the same result as MATLAB's
-    fspecial('gaussian',[shape],[sigma])
-    """
-    m, n = [(ss-1.)/2. for ss in shape]
-    y, x = np.ogrid[-m:m+1, -n:n+1]
-    h = np.exp( -(x*x + y*y) / (2.*sigma*sigma) )
-    h[ h < np.finfo(h.dtype).eps*h.max() ] = 0
-    sumh = h.sum()
-
-    if sumh != 0:
-        h /= sumh
-
-    return h
-
-def interpolatePChip1D(x, y, points):
-    f = scipy.interpolate.PchipInterpolator(x, y)
-    return f(points)
 
 class PythonMethodsTest(unittest.TestCase):
 
@@ -100,7 +74,7 @@ class PythonMethodsTest(unittest.TestCase):
 
     def test_cell(self):
     # MppmIntensW = cell(zeilen,spalten);
-        testcells = createCellsArray(192, 192)    
+        testcells = matlab_style_functions.createCellsArray(192, 192)    
         testvalue = [22, 34.7]
 
         testcells[5, 7] = testvalue
@@ -133,10 +107,10 @@ class PythonMethodsTest(unittest.TestCase):
     # myfilter = fspecial('gaussian',[gauss gauss],1.0);
         # G1 = fspecial('gaussian', [3.0 3.0], 1.0)
         G1 = np.array([[0.0751, 0.1238, 0.0751], [0.1238, 0.2042, 0.1238], [0.0751, 0.1238, 0.0751]])
-        result1 = matlab_style_gauss2D((3, 3), 1.0)
+        result1 = matlab_style_functions.matlab_style_gauss2D((3, 3), 1.0)
         # G2 = fspecial('gaussian', [5 1], 1.0)
         G2 = np.array([[0.0545], [0.2442], [0.4026], [0.2442], [0.0545]])
-        result2 = matlab_style_gauss2D((5, 1), 1.0)
+        result2 = matlab_style_functions.matlab_style_gauss2D((5, 1), 1.0)
         self.assertEquals(G1.tolist(), np.around(result1, decimals=4).tolist())
         self.assertEquals(G2.tolist(), np.around(result2, decimals=4).tolist())
 
@@ -150,12 +124,12 @@ class PythonMethodsTest(unittest.TestCase):
                      [4, 6, 13, 20, 22], 
                      [10, 12, 19, 21, 3],
                      [11, 18, 25, 2, 9]], dtype = int) 
-        b = np.array([[191, 61, 81, 141, 156], 
-                     [66, 76, 141, 186, 196],
-                     [86, 131, 191, 176, 106], 
-                     [126, 191, 186, 56, 66],
-                     [145, 215, 135, 55, 90]])
-        result = scipy.ndimage.correlate(a.astype(float), f, mode='nearest') #.transpose()
+        # b = np.array([[191, 61, 81, 141, 156], 
+        #              [66, 76, 141, 186, 196],
+        #              [86, 131, 191, 176, 106], 
+        #              [126, 191, 186, 56, 66],
+        #              [145, 215, 135, 55, 90]])
+        result = ndimage.correlate(a.astype(float), f, mode='nearest') #.transpose()
         #result = scipy.ndimage.convolve(a, f, mode='nearest').transpose()
         print(np.around(result, decimals = 4))
         #self.assertEquals(b.tolist(), result.tolist())
@@ -167,8 +141,8 @@ class PythonMethodsTest(unittest.TestCase):
         values = np.array([12, 16, 31, 10, 6])
         points = np.array([0, 0.5, 1.5, 5.5, 6])
         expected = np.array([19.3684, 13.6316, 13.2105, 7.4800, 12.5600])
-        result = interpolatePChip1D(x, values, points)
-        print(result)
+        result = matlab_style_functions.interpolatePChip1D(x, values, points)
+        #print(result)
         self.assertEquals(expected.tolist(), np.around(result, decimals = 4).tolist())
 
 
