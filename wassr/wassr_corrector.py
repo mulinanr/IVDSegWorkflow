@@ -22,61 +22,27 @@ class WassrCorrector(object):
         self.algoritm = algoritm
 
 
-    def calculateWassrAmlCorrection(self, imageDirectory, sName, filename, Mask = None):
-
-        if Mask.applyZFilter() == None:
-            Mask = matlab_style_functions.createDefaultMask(filename + '1', 0.0)
-
+    def calculateWassrAmlCorrection(self, imageDirectory, sName, filename, Mask):
         if self.alternating:
-            Images = matlab_style_functions.loadAndAlternateImages(imageDirectory, filename, self.gauss, self.sSlide, self.nDynamics, Mask)
+            (Images, ZeroImage, sequence) = common_functions.loadAndAlternateImages(imageDirectory, filename, self.gauss, self.sSlide, self.nDynamics, Mask)
         else:
-            Images = matlab_style_functions.loadImages(imageDirectory, filename, self.gauss, self.sSlide, self.nDynamics, Mask)
+            (Images, ZeroImage, sequence) = common_functions.loadImages(imageDirectory, filename, self.gauss, self.sSlide, self.nDynamics, Mask)
 
-        Images = self.normalizeImages(Images, Mask)
+        Images = common_functions.normalizeImages(Images, self.nDynamics, Mask)
 
         if self.zFilter:
-            Images = self.applyZFilter(Images)
-    
-    def normalizeImages(self, Images, Mask):
-        np.seterr(divide='ignore', invalid='ignore')
-        ZeroRemainder =  ( Images[:,:, 0].squeeze() + Images[:, :, self.nDynamics - 2].squeeze() ) / 2
+            Images = common_functions.applyZFilter(Images)
 
-        for i in range(0, self.nDynamics - 1):
-            Image = Images[:, :, i]
-            Image = Image / ZeroRemainder
-            Image = Image * Mask.astype(float)
-            elementsNaNs = np.isnan(Image)
-            Image[elementsNaNs] = 0
-            Images[:, :, i] = Image
+        (Offset, RootMeasure) = self.calculateOffsets(Images)
 
-        return Images
+        return (Offset, RootMeasure)
 
-    def applyZFilter(self, Images):
-        Filter = matlab_style_functions.matlab_style_gauss2D((5, 1), 1.0)
-        (rows, columns, pages) = Images.shape
-
-        for i in range(rows):
-            for j in range(columns):
-                Pipe = Images[i, j, :].squeeze()
-                dim = np.size(Pipe)
-                Pipe = np.reshape(Pipe, (dim, 1))
-
-                PipeE = np.concatenate((np.flipud(Pipe), Pipe, np.flipud(Pipe)))
-                PipeR = signal.convolve2d(PipeE, np.rot90(Filter,2), mode='same')
-                PipeN = PipeR[dim : dim * 2]
-
-                for k in range(dim):
-                    Images[i, j, k] = PipeN[k, 0]
-
-        return Images
 
     def calculateOffsets(self, Images):
         (rows, columns, pages) = Images.shape
 
         Offset = np.zeros((rows, columns), dtype = float)
         RootMeasure = np.zeros((rows, columns), dtype = float)
-        mppmIntensW = matlab_style_functions.createCellsArray(rows, columns) 
-        lowstepIntensW = matlab_style_functions.createCellsArray(rows, columns)
 
         stepOhneShift = (self.maxOffset * 2) / (self.nDynamics - 2)
         Mppmwerte = np.arange(-self.maxOffset, self.maxOffset, stepOhneShift).transpose()
@@ -84,14 +50,8 @@ class WassrCorrector(object):
 
         for i in range(rows):
             for j in range(columns):
-                Mintenswerte = Images[i,j,:].squeeze().transpose()
-                (Offset[i, j], RootMeasure[i, j], xData, yData) = self.algoritm.calculate(Mppmwerte, Mintenswerte)
-                mppmIntensW[i, j] = [Mppmwerte, Mintenswerte]
-                lowstepIntensW[i, j] = [xData, yData]
-                pass
+                if Images[i,j,0] != 0:
+                    Mintenswerte = Images[i,j,:].squeeze().transpose()
+                    (Offset[i, j], RootMeasure[i, j]) = self.algoritm.calculate(Mppmwerte, Mintenswerte)
 
-        return (Offset, RootMeasure, mppmIntensW, lowstepIntensW)
-
-
-
-
+        return (Offset, RootMeasure)
