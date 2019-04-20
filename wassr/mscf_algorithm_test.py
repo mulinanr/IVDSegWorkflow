@@ -31,7 +31,6 @@ class MscfAlgorithmTest(unittest.TestCase):
         mppmValue = np.array([-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
         algorithm = createMscfAlgorithm()
 
-        #(OF, x_interp, fitcurve_ydata, R) = algorithm.calculate(mppmValue, minimalValue)
         (OF,  R) = algorithm.calculate(mppmValue, minimalValue)
         
         self.assertTrue(abs(0.38 - OF) < OF * 0.0001)
@@ -71,7 +70,6 @@ class MscfAlgorithmTest(unittest.TestCase):
                             3.96966666666667, 3.87733333333333, 3.72100000000000, 3.49866666666667, 3.20833333333334, 2.84800000000000, 2.41566666666667, 1.90933333333333, 1.32700000000000, 0.666666666666667])
         algorithm = createMscfAlgorithm()
 
-        #(result1, result2, result3, result4) = algorithm.calculateMscfAml(xWerte, yWerte, x_interp_mirror, y_interp)
         (OF, R) = algorithm.calculateMscfAml(xWerte, yWerte, x_interp_mirror, y_interp)
 
         self.assertEqual(0.38, np.around(OF, decimals=2))

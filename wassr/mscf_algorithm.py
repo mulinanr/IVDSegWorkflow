@@ -12,45 +12,41 @@ class MscfAlgorithm(algorithm.Algorithm):
         self.maxOffset = maxOffset
         self.maxShift = maxShift
 
-    def calculate(self, mppmValue, minimalValue):
 
+    def calculate(self, mppmValue, minimalValue):
         dppm = 0.5
-        nTrials = 1
         OF = 0.0
         wertmin_n = 0.0
 
-        for i in range(0, nTrials):
-            xWerte = mppmValue[:]
-            yWerte = minimalValue[:]
+        xWerte = mppmValue[:]
+        yWerte = minimalValue[:]
 
-            x_start = np.min(xWerte)
-            x_end = np.max(xWerte)
+        x_start = np.min(xWerte)
+        x_end = np.max(xWerte)
 
-            x_interp = np.arange(x_start, x_end, self.hStep).transpose()
-            x_interp = np.append(x_interp, x_end)
+        x_interp = np.arange(x_start, x_end, self.hStep).transpose()
+        x_interp = np.append(x_interp, x_end)
+        x_interp_mirror = -x_interp
 
-            y_interp = matlab_style_functions.interpolatePChip1D(xWerte, yWerte, x_interp)
+        y_interp = matlab_style_functions.interpolatePChip1D(xWerte, yWerte, x_interp)
+        minind = np.argmin(y_interp)
+        
+        xsuch = round(x_interp[minind]  * 100) / 100
+        xsuch_minus = xsuch - dppm
+        xsuch_plus = xsuch + dppm
 
-            minind = np.argmin(y_interp)
-            
-            xsuch = round(x_interp[minind]  * 100) / 100
-            xsuch_minus = xsuch - dppm
-            xsuch_plus = xsuch + dppm
+        if xsuch_minus <= x_start:
+            xsuch_minus = x_start
 
-            if xsuch_minus <= x_start:
-                xsuch_minus = x_start
+        if xsuch_plus >= x_end:
+            xsuch_plus = x_end
 
-            if xsuch_plus >= x_end:
-                xsuch_plus = x_end
+        x_interp_neu = np.arange(xsuch_minus, xsuch_plus, self.hStep).transpose()
+        x_interp_neu = np.append(x_interp_neu, xsuch_plus)
 
-            x_interp_neu = np.arange(xsuch_minus, xsuch_plus, self.hStep).transpose()
-            x_interp_neu = np.append(x_interp_neu, xsuch_plus)
+        y_interp_neu = matlab_style_functions.interpolatePChip1D(xWerte, yWerte, x_interp_neu)
 
-            y_interp_neu = matlab_style_functions.interpolatePChip1D(xWerte, yWerte, x_interp_neu)
-
-            x_interp_mirror = -x_interp
- 
-            (OF, wertmin_n) = self.calculateMscfAml(x_interp_neu, y_interp_neu, x_interp_mirror, y_interp)
+        (OF, wertmin_n) = self.calculateMscfAml(x_interp_neu, y_interp_neu, x_interp_mirror, y_interp)
 
         return (OF, wertmin_n)
 
