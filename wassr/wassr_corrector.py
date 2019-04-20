@@ -28,6 +28,10 @@ class WassrCorrector(object):
         else:
             (Images, ZeroImage, sequence) = common_functions.loadImages(imageDirectory, filename, self.gauss, self.sSlide, self.nDynamics, Mask)
 
+        I0 = Images[:, :, 0]
+        I1 = Images[:, :, 1]
+        I20 = Images[:, :, 20]
+
         Images = common_functions.normalizeImages(Images, self.nDynamics, Mask)
 
         if self.zFilter:
