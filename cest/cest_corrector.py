@@ -6,7 +6,7 @@ from utils import matlab_style_functions
 
 class CestCorrector(object):
 
-    def __init__(self, sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, lmo, gauss, S0yn, zFilter):
+    def __init__(self, sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, gauss, S0yn, zFilter):
         self.sSlide = sSlide
         self.hStep = hStep
         self.maxOffset = maxOffset
@@ -15,7 +15,6 @@ class CestCorrector(object):
         self.dfreq = dfreq
         self.alternating = alternating
         self.nDynamics = nDynamics
-        self.lmo = lmo
         self.gauss = gauss
         self.S0yn = S0yn
         self.zFilter = zFilter

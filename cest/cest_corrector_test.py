@@ -23,13 +23,12 @@ fshift = 1.5
 dfreq = 0.6
 alternating = False
 nDynamics = 32
-lmo = 'B'
 gauss = 3.0
 S0yn = 1
 zFilter = False
 
 def createCestCorrector():
-    return cest_corrector.CestCorrector(sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, lmo, gauss, S0yn, zFilter)
+    return cest_corrector.CestCorrector(sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, gauss, S0yn, zFilter)
 
 def prepareOfsetts(sName, Mask, hStepA, maxOffsetA):
     wassrFilesPath = '../DICOM_TEST/WASSR_99677/'
@@ -53,7 +52,6 @@ class CestCorrectorTest(unittest.TestCase):
         self.assertEqual(dfreq, corrector.dfreq)
         self.assertEqual(alternating, corrector.alternating)
         self.assertEqual(nDynamics, corrector.nDynamics)
-        self.assertEqual(lmo, corrector.lmo)
         self.assertEqual(gauss, corrector.gauss)
         self.assertEqual(S0yn, corrector.S0yn)
         self.assertEqual(zFilter, corrector.zFilter)
