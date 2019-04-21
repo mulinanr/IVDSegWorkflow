@@ -32,8 +32,16 @@ def defineSName(imageDirectory, sSlide):
     filename = filename + '_sl_' + str(sSlide) + '_dyn_'
     return (sName, filename)
 
+def defineFilename(imageDirectory, sSlide):
+    pathArray = os.path.normpath(imageDirectory).lstrip(os.path.sep).split(os.path.sep)
+    filename = pathArray[-1]
+    filename = filename + '_sl_' + str(sSlide) + '_dyn_'
+    return filename
+
+
 def getImageSize(imageDirectory, sSlide):
-    filename = os.path.basename(os.path.dirname(imageDirectory)) + '_sl_' + str(sSlide) + '_dyn_1'
+    (sName, filename) = defineSName(imageDirectory, sSlide)
+    filename = filename + '1'
     dataset = pydicom.dcmread(os.path.join(imageDirectory,filename))
     return (int(dataset.Rows), int(dataset.Columns))
 

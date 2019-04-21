@@ -41,10 +41,10 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
     wassrCorrector = wassr_corrector.WassrCorrector(wassrProperties.sSlide, 
                 wassrProperties.hStep, wassrProperties.maxOffset, wassrProperties.alternating, wassrProperties.nDynamics, 
                 wassrProperties.lmo, wassrProperties.gauss, wassrProperties.zFilter, algoritm)
-    #(Offsets, R) = wassrCorrector.calculateWassrAmlCorrection(wassrPath, sName, filename, Mask)
+    (Offsets, R) = wassrCorrector.calculateWassrAmlCorrection(wassrPath, sName, filename, Mask)
  
     #   4.1. Display if needed
-    Offsets = np.ones((192, 192)) * 0.7
+    #Offsets = np.ones((192, 192)) * 0.7
     rootWassr = tk.Tk()
     rootWassr.title("Offset")
     imageWassr = Image.fromarray(common_functions.interval_mapping(Offsets, 0.0, 1.0, 0, 255))
@@ -58,20 +58,21 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
 
 
     # 5. Make CEST cortrection
+    filename = common_functions.defineFilename(cestPath, cestProperties.sSlide)
     cestCorrector = cest_corrector.CestCorrector(cestProperties.sSlide, cestProperties.hStep, cestProperties.maxOffset, 
                 cestProperties.abreite, cestProperties.fshift, cestProperties.dfreq, cestProperties.alternating, 
                 cestProperties.nDynamics, cestProperties.gauss, cestProperties.S0yn, cestProperties.zFilter)
-    #(CestCurveS, x_calcentries) = cestCorrector.calculateCestAmlEvaluation(cestPath, OF, sName, filename, Mask)
+    (CestCurveS, x_calcentries) = cestCorrector.calculateCestAmlEvaluation(cestPath, Offsets, sName, filename, Mask)
  
     #   5.1. Save to SName if needed
 
 
     # 6. Calculate MTR Async
     mtrAsymCalculator = mtr_asym_calculator.MtrAsymCalculator(cestProperties.fshift, cestProperties.dfreq)
-    #(MTRasymCurves, MTRasym_Bild) = mtrAsymCalculator.calculateMtrAsymCurves(CestCurveS, x_calcentries, Mask)
+    (MTRasymCurves, MTRasym_Bild) = mtrAsymCalculator.calculateMtrAsymCurves(CestCurveS, x_calcentries, Mask)
 
     #   6.1. Display if needed
-    MTRasym_Bild = np.ones((192, 192)) * 0.7
+    #MTRasym_Bild = np.ones((192, 192)) * 0.7
     rootMtr = tk.Tk()
     rootMtr.title("MTRasym")
     imageMtr = Image.fromarray(common_functions.interval_mapping(MTRasym_Bild, 0.0, 1.0, 0, 255))
