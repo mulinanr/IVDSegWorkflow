@@ -3,14 +3,9 @@ import math
 
 class MtrAsymCalculator(object):
 
-    def __init__(self, sSlide, fshift, dfreq, lmo, gauss, S0yn, zFilter):
-        self.sSlide = sSlide
-        self.fshift = fshift
-        self.dfreq = dfreq
-        self.lmo = lmo
-        self.gauss = gauss
-        self.S0yn = S0yn
-        self.zFilter = zFilter
+    def __init__(self, fshift, dfreq):
+        self.fshift = float(fshift)
+        self.dfreq = float(dfreq)
 
 
     def calculateMtrAsymCurves(self, CestCurvesS, x_calcentries, Mask):

@@ -6,7 +6,6 @@ import numpy as np
 
 from utils import common_functions
 from wassr import wassr_corrector
-from wassr import mscf_algorithm
 from wassr import algorithm
 from wassr import mscf_algorithm
 
@@ -25,14 +24,14 @@ class MockAlgorithm(algorithm.Algorithm):
 testFilesPath = '../DICOM_TEST/WASSR_99677/'
 filename = 'WASSR_99677_sl_1_dyn_'
 
-sSlide = 1
-hStep = 0.01
-maxOffset = 1.0
-alternating = False
-nDynamics = 22
+sSlide = '1'
+hStep = '0.01'
+maxOffset = '1.0'
+alternating = 'False'
+nDynamics = '22'
 lmo = 'B'
-gauss = 3.0
-zFilter = False
+gauss = '3.0'
+zFilter = 'False'
 algoritm = MockAlgorithm(hStep, maxOffset, maxOffset)
 
 def createWassrCorrector():
@@ -44,14 +43,14 @@ class WassrCorrectorTest(unittest.TestCase):
     def test_constructor(self):
         corrector = createWassrCorrector()
 
-        self.assertEqual(sSlide, corrector.sSlide)
-        self.assertEqual(hStep, corrector.hStep)
-        self.assertEqual(maxOffset, corrector.maxOffset)
-        self.assertEqual(alternating, corrector.alternating)
-        self.assertEqual(nDynamics, corrector.nDynamics)
+        self.assertEqual(int(sSlide), corrector.sSlide)
+        self.assertEqual(float(hStep), corrector.hStep)
+        self.assertEqual(float(maxOffset), corrector.maxOffset)
+        self.assertEqual(common_functions.str2bool(alternating), corrector.alternating)
+        self.assertEqual(int(nDynamics), corrector.nDynamics)
         self.assertEqual(lmo, corrector.lmo)
-        self.assertEqual(gauss, corrector.gauss)
-        self.assertEqual(zFilter, corrector.zFilter)
+        self.assertEqual(float(gauss), corrector.gauss)
+        self.assertEqual(common_functions.str2bool(zFilter), corrector.zFilter)
 
 
     def test_calculate_wassr_aml_correction(self):
@@ -86,9 +85,9 @@ class WassrCorrectorTest(unittest.TestCase):
     def test_calculate_offsets(self):
         corrector = createWassrCorrector()
         Mask = common_functions.createDefaultMask(os.path.join(testFilesPath, filename + '1'), 0)
-        (Images, ZeroImage, sequence) = common_functions.loadImages(testFilesPath, filename, gauss, sSlide, nDynamics, Mask)
+        (Images, ZeroImage, sequence) = common_functions.loadImages(testFilesPath, filename, float(gauss), int(sSlide), int(nDynamics), Mask)
 
-        NormalizedImages = common_functions.normalizeImages(Images, nDynamics, Mask)
+        NormalizedImages = common_functions.normalizeImages(Images, int(nDynamics), Mask)
 
         (result1, result4) = corrector.calculateOffsets(NormalizedImages)
 

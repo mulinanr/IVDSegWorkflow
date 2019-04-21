@@ -9,8 +9,8 @@ from wassr import mscf_algorithm
 from wassr import algorithm
 
 
-hStep = 0.01
-maxOffset = 1.0
+hStep = '0.01'
+maxOffset = '1.0'
 
 def createMscfAlgorithm():
     return mscf_algorithm.MscfAlgorithm(hStep, maxOffset, maxOffset)
@@ -21,9 +21,9 @@ class MscfAlgorithmTest(unittest.TestCase):
     def test_constructor(self):
         algorithm = createMscfAlgorithm()
 
-        self.assertEqual(hStep, algorithm.hStep)
-        self.assertEqual(maxOffset, algorithm.maxOffset)
-        self.assertEqual(maxOffset, algorithm.maxShift)
+        self.assertEqual(float(hStep), algorithm.hStep)
+        self.assertEqual(float(maxOffset), algorithm.maxOffset)
+        self.assertEqual(float(maxOffset), algorithm.maxShift)
 
 
     def test_calculate(self):

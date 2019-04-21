@@ -7,17 +7,17 @@ from utils import matlab_style_functions
 class CestCorrector(object):
 
     def __init__(self, sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, gauss, S0yn, zFilter):
-        self.sSlide = sSlide
-        self.hStep = hStep
-        self.maxOffset = maxOffset
-        self.abreite = abreite
-        self.fshift = fshift
-        self.dfreq = dfreq
-        self.alternating = alternating
-        self.nDynamics = nDynamics
-        self.gauss = gauss
-        self.S0yn = S0yn
-        self.zFilter = zFilter
+        self.sSlide = int(sSlide)
+        self.hStep = float(hStep)
+        self.maxOffset = float(maxOffset)
+        self.abreite = float(abreite)
+        self.fshift = float(fshift)
+        self.dfreq = float(dfreq)
+        self.alternating = common_functions.str2bool(alternating)
+        self.nDynamics = int(nDynamics)
+        self.gauss = float(gauss)
+        self.S0yn = int(S0yn)
+        self.zFilter = common_functions.str2bool(zFilter)
 
 
     def calculateCestAmlEvaluation(self, imageDirectory, Offsets, sName, filename, Mask):

@@ -5,16 +5,13 @@ from cest import mtr_asym_calculator
 from cest import cest_corrector_test
 from utils import common_functions
 
-sSlide = 1
-fshift = 1.5
-dfreq = 0.6
-lmo = 'B'
-gauss = 3.0
-S0yn = 1
-zFilter = False
+
+fshift = '1.5'
+dfreq = '0.6'
+
 
 def createMtrAsymCalculator():
-    return mtr_asym_calculator.MtrAsymCalculator(sSlide, fshift, dfreq, lmo, gauss, S0yn, zFilter)
+    return mtr_asym_calculator.MtrAsymCalculator(fshift, dfreq)
 
 def createCestCurves(Mask):
     sName = '../DICOM_TEST/A_WASSR_99677'
@@ -34,13 +31,8 @@ class MtrAsymCalculatorTest(unittest.TestCase):
     def test_constructor(self):
         calculator = createMtrAsymCalculator()
 
-        self.assertEqual(sSlide, calculator.sSlide)
-        self.assertEqual(fshift, calculator.fshift)
-        self.assertEqual(dfreq, calculator.dfreq)
-        self.assertEqual(lmo, calculator.lmo)
-        self.assertEqual(gauss, calculator.gauss)
-        self.assertEqual(S0yn, calculator.S0yn)
-        self.assertEqual(zFilter, calculator.zFilter)
+        self.assertEqual(float(fshift), calculator.fshift)
+        self.assertEqual(float(dfreq), calculator.dfreq)
 
 
     def test_calculateMtrAsymCurves(self):

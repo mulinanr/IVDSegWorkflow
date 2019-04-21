@@ -11,14 +11,14 @@ from utils import matlab_style_functions
 class WassrCorrector(object):
 
     def __init__(self, sSlide, hStep, maxOffset, alternating, nDynamics, lmo, gauss, zFilter, algoritm):
-        self.sSlide = sSlide
-        self.hStep = hStep
-        self.maxOffset = maxOffset
-        self.alternating = alternating
-        self.nDynamics = nDynamics
+        self.sSlide = int(sSlide)
+        self.hStep = float(hStep)
+        self.maxOffset = float(maxOffset)
+        self.alternating = common_functions.str2bool(alternating)
+        self.nDynamics = int(nDynamics)
         self.lmo = lmo
-        self.gauss = gauss
-        self.zFilter = zFilter
+        self.gauss = float(gauss)
+        self.zFilter = common_functions.str2bool(zFilter)
         self.algoritm = algoritm
 
 

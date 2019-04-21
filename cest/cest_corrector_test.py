@@ -15,17 +15,17 @@ from wassr import mscf_algorithm
 testFilesPath = '../DICOM_TEST/gagCEST_12_99476/'
 filename = 'gagCEST_12_99476_sl_1_dyn_'
 
-sSlide = 1
-hStep = 0.01
-maxOffset = 4.0
-abreite = 3.0
-fshift = 1.5
-dfreq = 0.6
-alternating = False
-nDynamics = 32
-gauss = 3.0
-S0yn = 1
-zFilter = False
+sSlide = '1'
+hStep = '0.01'
+maxOffset = '4.0'
+abreite = '3.0'
+fshift = '1.5'
+dfreq = '0.6'
+alternating = 'False'
+nDynamics = '32'
+gauss = '3.0'
+S0yn = '1'
+zFilter = 'False'
 
 def createCestCorrector():
     return cest_corrector.CestCorrector(sSlide, hStep, maxOffset, abreite, fshift, dfreq, alternating, nDynamics, gauss, S0yn, zFilter)
@@ -44,17 +44,17 @@ class CestCorrectorTest(unittest.TestCase):
     def test_constructor(self):
         corrector = createCestCorrector()
 
-        self.assertEqual(sSlide, corrector.sSlide)
-        self.assertEqual(hStep, corrector.hStep)
-        self.assertEqual(maxOffset, corrector.maxOffset)
-        self.assertEqual(abreite, corrector.abreite)
-        self.assertEqual(fshift, corrector.fshift)
-        self.assertEqual(dfreq, corrector.dfreq)
-        self.assertEqual(alternating, corrector.alternating)
-        self.assertEqual(nDynamics, corrector.nDynamics)
-        self.assertEqual(gauss, corrector.gauss)
-        self.assertEqual(S0yn, corrector.S0yn)
-        self.assertEqual(zFilter, corrector.zFilter)
+        self.assertEqual(int(sSlide), corrector.sSlide)
+        self.assertEqual(float(hStep), corrector.hStep)
+        self.assertEqual(float(maxOffset), corrector.maxOffset)
+        self.assertEqual(float(abreite), corrector.abreite)
+        self.assertEqual(float(fshift), corrector.fshift)
+        self.assertEqual(float(dfreq), corrector.dfreq)
+        self.assertEqual(common_functions.str2bool(alternating), corrector.alternating)
+        self.assertEqual(int(nDynamics), corrector.nDynamics)
+        self.assertEqual(float(gauss), corrector.gauss)
+        self.assertEqual(int(S0yn), corrector.S0yn)
+        self.assertEqual(common_functions.str2bool(zFilter), corrector.zFilter)
 
 
     def test_calculateCestAmlEvaluation(self):
@@ -84,8 +84,8 @@ class CestCorrectorTest(unittest.TestCase):
     def test_calculate_offsets(self):
         corrector = createCestCorrector()
         Mask = common_functions.createTestMask(192, 192, 4)
-        (Images, ZeroImage, sequence) = common_functions.loadImages(testFilesPath, filename, gauss, sSlide, nDynamics, Mask)
-        Images = common_functions.normalizeImages(Images, nDynamics, Mask)
+        (Images, ZeroImage, sequence) = common_functions.loadImages(testFilesPath, filename, float(gauss), int(sSlide), int(nDynamics), Mask)
+        Images = common_functions.normalizeImages(Images, int(nDynamics), Mask)
         Offsets = np.zeros((192,192), dtype = float)
         
         (cestC, xC) = corrector.calculateCestEvaluation(Images, ZeroImage, Offsets, Mask)

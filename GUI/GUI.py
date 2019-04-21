@@ -1,8 +1,11 @@
 from guizero import App, PushButton, Slider, Text, Window, TextBox, Picture, Box, Combo
 from tkinter.filedialog import askdirectory
+import os
 
-import cest_properties
-import wassr_properties
+from gui import cest_properties
+from gui import wassr_properties
+
+import cest_evaluation
 
 
 def calculate():
@@ -13,9 +16,7 @@ def calculate():
     wassrProperties = wassr_properties.WassrProperties(wassr_selsl.value, wassr_hstep.value, 
                     wassr_maxoffset.value, wassr_alternating.value, wassr_ndynamic.value, 
                     wassr_lmo.value, wassr_gauss.value, wassr_zfilter.value)
-    print (cestProperties.gauss)
-    print (wassrProperties.gauss)
-
+    cest_evaluation.processMri(FF_path.value, FFC_path.value, wassrProperties, cestProperties)
 
 
 def open_browse_FF():

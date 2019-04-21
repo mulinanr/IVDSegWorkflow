@@ -8,9 +8,9 @@ from utils import matlab_style_functions
 class MscfAlgorithm(algorithm.Algorithm):
 
     def __init__(self, hStep, maxOffset, maxShift):
-        self.hStep = hStep
-        self.maxOffset = maxOffset
-        self.maxShift = maxShift
+        self.hStep = float(hStep)
+        self.maxOffset = float(maxOffset)
+        self.maxShift = float(maxShift)
 
 
     def calculate(self, mppmValue, minimalValue):
