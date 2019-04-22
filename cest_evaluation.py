@@ -4,6 +4,10 @@ import numpy as np
 import tkinter as tk
 from PIL import Image, ImageTk
 
+import matplotlib as mpl
+#import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
 from cest import cest_corrector
 from cest import mtr_asym_calculator
 from utils import common_functions
@@ -13,6 +17,7 @@ from wassr import wassr_corrector
 
 
 def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
+    cm_hot = mpl.cm.get_cmap('jet')
 
     # 1. Load Files
 
@@ -22,6 +27,7 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
 
     # 3. Get Mask, temporary use test Mask
     Mask = common_functions.createTestMask(192, 192, 5)
+    Mask = np.load('../DICOM_TEST_1/maske.npy')
 
     #   3.1. Display if needed
     rootMask = tk.Tk()
@@ -47,7 +53,10 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
     #Offsets = np.ones((192, 192)) * 0.7
     rootWassr = tk.Tk()
     rootWassr.title("Offset")
-    imageWassr = Image.fromarray(common_functions.interval_mapping(Offsets, 0.0, 1.0, 0, 255))
+    print('R min and max: ')
+    print(np.min(R))
+    print(np.max(R))
+    imageWassr = Image.fromarray(common_functions.interval_mapping(R, np.min(R), np.max(R), 0, 255))
     imageWassr = imageWassr.resize((576, 576))
     imgWassr =  ImageTk.PhotoImage(image = imageWassr, master = rootWassr)
     canvas = tk.Canvas(rootWassr, width = 620, height = 620)
@@ -73,9 +82,15 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
 
     #   6.1. Display if needed
     #MTRasym_Bild = np.ones((192, 192)) * 0.7
+    MTRasym_Bild = MTRasym_Bild / float(cestProperties.dfreq)
+    print('MTRasym min and max: ')
+    print(np.min(MTRasym_Bild))
+    print(np.max(MTRasym_Bild))
+    #im = np.array(MTRasym_Bild)
+    #im = cm_hot(im)
     rootMtr = tk.Tk()
     rootMtr.title("MTRasym")
-    imageMtr = Image.fromarray(common_functions.interval_mapping(MTRasym_Bild, 0.0, 1.0, 0, 255))
+    imageMtr = Image.fromarray(common_functions.interval_mapping(MTRasym_Bild, np.min(MTRasym_Bild), np.max(MTRasym_Bild), 0, 255))
     imageMtr = imageMtr.resize((576, 576))
     imgMtr =  ImageTk.PhotoImage(image = imageMtr, master = rootMtr)
     canvas = tk.Canvas(rootMtr, width = 620, height = 620)
