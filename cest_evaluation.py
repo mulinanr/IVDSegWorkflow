@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import pydicom
 import tkinter as tk
 from PIL import Image, ImageTk
 
@@ -10,6 +11,8 @@ import matplotlib.image as mpimg
 
 from cest import cest_corrector
 from cest import mtr_asym_calculator
+from cnn import predict
+from cnn import model_unet
 from utils import common_functions
 from wassr import algorithm
 from wassr import mscf_algorithm
@@ -17,7 +20,7 @@ from wassr import wassr_corrector
 
 
 def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
-    cm_hot = mpl.cm.get_cmap('jet')
+    cm = mpl.cm.get_cmap('jet')
 
     # 1. Load Files
 
@@ -26,8 +29,12 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
 
 
     # 3. Get Mask, temporary use test Mask
-    Mask = common_functions.createTestMask(192, 192, 5)
-    Mask = np.load('../DICOM_TEST_1/maske.npy')
+    #Mask = common_functions.createTestMask(192, 192, 5)
+    #Mask = np.load('../DICOM_TEST_1/maske.npy')
+
+    mriImage = pydicom.dcmread(os.path.join(wassrPath, filename + '1')).pixel_array
+    Mask = predict.predict(mriImage, 'unet_04.hdf5', model_unet.unet)
+    Mask = Mask[0, :, :, 0]
 
     #   3.1. Display if needed
     rootMask = tk.Tk()
@@ -81,18 +88,16 @@ def processMri(wassrPath, cestPath, wassrProperties, cestProperties):
     (MTRasymCurves, MTRasym_Bild) = mtrAsymCalculator.calculateMtrAsymCurves(CestCurveS, x_calcentries, Mask)
 
     #   6.1. Display if needed
-    #MTRasym_Bild = np.ones((192, 192)) * 0.7
     MTRasym_Bild = MTRasym_Bild / float(cestProperties.dfreq)
-    print('MTRasym min and max: ')
-    print(np.min(MTRasym_Bild))
-    print(np.max(MTRasym_Bild))
-    #im = np.array(MTRasym_Bild)
-    #im = cm_hot(im)
+
+    colored_image = cm(MTRasym_Bild)
+    colored_image_mtr_asym = Image.fromarray((colored_image[:, :, :3] * 255).astype(np.uint8)).resize((576, 576))
     rootMtr = tk.Tk()
     rootMtr.title("MTRasym")
     imageMtr = Image.fromarray(common_functions.interval_mapping(MTRasym_Bild, np.min(MTRasym_Bild), np.max(MTRasym_Bild), 0, 255))
     imageMtr = imageMtr.resize((576, 576))
-    imgMtr =  ImageTk.PhotoImage(image = imageMtr, master = rootMtr)
+    #imgMtr =  ImageTk.PhotoImage(image = imageMtr, master = rootMtr)
+    imgMtr =  ImageTk.PhotoImage(image = colored_image_mtr_asym, master = rootMtr)
     canvas = tk.Canvas(rootMtr, width = 620, height = 620)
     canvas.pack()
     canvas.create_image(20, 20, anchor = "nw", image = imgMtr)
